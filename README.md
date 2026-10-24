@@ -107,6 +107,7 @@ pytest -m live          # real end-to-end test — uses 1 generation from your q
 | "Image upload failed for part N" | Check that the image opens and is PNG/JPEG/WEBP under the size limit, replace it if needed, then **Resume**. |
 | Part failed with "A generation may have started…" (`UNCERTAIN_SUBMIT`) | The app or browser stopped mid-generation. Check the Vids project in Drive, then **Retry Failed Parts** (this uses a new generation). |
 | "The automation Chrome is running with no window open" | Switch to that Chrome and press Cmd+N / Ctrl+N, or quit it and run `python app.py --login`. |
+| "Unable to obtain driver for chrome" | Selenium Manager couldn't download ChromeDriver. Run `python app.py --check-browser` to see why. Allow internet access for Python (proxy, firewall, antivirus), or download ChromeDriver for your Chrome version from the Chrome for Testing page and set `"chromedriver_path"` in `config.json`. |
 | Chrome doesn't open / port in use | Close other Chrome windows using `data/chrome-profile`, or change `browser.debug_port` in `config.json`. |
 | Disk full / permission denied (job **Needs you**) | Free space or fix the folder permissions shown in the message, then **Resume**. Nothing is regenerated. |
 | A file name ends in `_v2` | A file with that name already existed. Nothing is ever overwritten; the event log and report list every rename. |

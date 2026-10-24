@@ -16,11 +16,12 @@ DEFAULTS_FILE = PROJECT_ROOT / "config.example.json"
 # Keys whose default is null, with the type they take when set.
 NULLABLE_TYPES: dict[str, type] = {
     "browser.chrome_binary": str,
+    "browser.chromedriver_path": str,
     "limits.max_script_chars": int,
 }
 # Values that are filesystem paths. Relative ones resolve against the project root.
 PATH_SECTIONS = ("paths",)
-PATH_KEYS = ("browser.chrome_binary", "browser.profile_dir", "fake.scenario")
+PATH_KEYS = ("browser.chrome_binary", "browser.chromedriver_path", "browser.profile_dir", "fake.scenario")
 BROWSER_MODES = ("attach", "launch")
 
 

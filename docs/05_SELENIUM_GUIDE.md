@@ -18,7 +18,8 @@ Google Vids has no public automation API. Everything here drives the normal web 
    opts.debugger_address = f"127.0.0.1:{port}"
    driver = webdriver.Chrome(options=opts)   # Selenium Manager resolves a matching ChromeDriver
    ```
-4. Chrome 136+ refuses remote debugging on the default user-data-dir. A dedicated `--user-data-dir` is required, which this design always uses.
+4. ChromeDriver comes from Selenium Manager, which needs internet access the first time. If it can't (offline, proxy, antivirus), set `browser.chromedriver_path` to a ChromeDriver matching the Chrome version. `python app.py --check-browser` shows which step fails.
+5. Chrome 136+ refuses remote debugging on the default user-data-dir. A dedicated `--user-data-dir` is required, which this design always uses.
 
 ### `launch` (fallback)
 Selenium starts Chrome with `--user-data-dir=<profile>`. Use this only if M1 shows attach mode is unreliable.

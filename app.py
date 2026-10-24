@@ -4,12 +4,14 @@ python app.py                 UI at http://127.0.0.1:5000 with the live controll
 python app.py --fake          fake controller (no Google access, no quota)
 python app.py --fake --scenario tests/scenarios/quota_after_2.json
 python app.py --login         open the automation Chrome for manual sign-in
+python app.py --check-browser diagnose Chrome / ChromeDriver / attach problems (no Google actions)
 python app.py --host 0.0.0.0  LAN access for UI testing (automation still runs on this machine)
 """
 
 import argparse
 import json
 import logging
+import platform
 import sys
 from pathlib import Path
 from typing import Any
@@ -357,9 +359,55 @@ def login(cfg: Config) -> None:
         driver.quit()
 
 
+def check_browser(cfg: Config) -> int:
+    """Print what the app needs from Chrome and ChromeDriver, and where it fails. Does nothing on Google pages."""
+    import selenium
+
+    ok = True
+    print(f"OS: {platform.platform()} | Python {platform.python_version()} | Selenium {selenium.__version__}")
+    print(f"Browser mode: {cfg.browser.mode} | debug port: {cfg.browser.debug_port} | profile: {cfg.browser.profile_dir}")
+    try:
+        chrome = platform_utils.find_chrome_binary(cfg.browser.chrome_binary)
+        print(f"[OK]   Chrome found: {chrome}")
+    except ConfigError as exc:
+        print(f"[FAIL] Chrome: {exc}")
+        return 1
+    if cfg.browser.chromedriver_path is not None:
+        exists = cfg.browser.chromedriver_path.is_file()
+        ok &= exists
+        print(f"[{'OK' if exists else 'FAIL'}]   chromedriver_path: {cfg.browser.chromedriver_path}"
+              f"{'' if exists else ' (file not found)'}")
+    else:
+        from selenium.webdriver.common.selenium_manager import SeleniumManager
+        logging.getLogger("selenium.webdriver.common.selenium_manager").setLevel(logging.DEBUG)
+        try:
+            paths = SeleniumManager().binary_paths(["--browser", "chrome", "--browser-path", str(chrome)])
+            print(f"[OK]   Selenium Manager ChromeDriver: {paths.get('driver_path')}")
+        except Exception as exc:  # show Selenium Manager's own reason
+            ok = False
+            print(f"[FAIL] Selenium Manager could not get ChromeDriver: {exc}")
+            print("       Fix: allow internet access for Python/selenium-manager (proxy, firewall, antivirus), or download")
+            print("       ChromeDriver for your Chrome version and set browser.chromedriver_path in config.json.")
+    if cfg.browser.mode == "attach":
+        if browser.debug_endpoint_alive(cfg.browser.debug_port):
+            print(f"[OK]   Automation Chrome is listening on 127.0.0.1:{cfg.browser.debug_port}")
+            try:
+                driver = browser.attach_driver(cfg)
+                print(f"[OK]   Selenium attached ({len(driver.window_handles)} tab(s))")
+                driver.quit()  # ends the session only; Chrome stays open
+            except (ConfigError, BrowserStartError) as exc:
+                ok = False
+                print(f"[FAIL] Attach: {exc}")
+        else:
+            print("[INFO] Automation Chrome is not running. Start it with: python app.py --login")
+    print("All checks passed." if ok else "Some checks failed: see [FAIL] lines above.")
+    return 0 if ok else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Google Vids Automation")
     parser.add_argument("--login", action="store_true", help="open the automation Chrome profile for manual sign-in")
+    parser.add_argument("--check-browser", action="store_true", help="diagnose Chrome / ChromeDriver / attach problems")
     parser.add_argument("--fake", action="store_true", help="use the fake controller (no Google access, no quota)")
     parser.add_argument("--scenario", help="fake scenario JSON (implies --fake)")
     parser.add_argument("--host", help="bind address (default from config; 0.0.0.0 = LAN access)")
@@ -371,6 +419,8 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
     setup_logging(cfg)
+    if args.check_browser:
+        return check_browser(cfg)
     if args.login:
         try:
             login(cfg)

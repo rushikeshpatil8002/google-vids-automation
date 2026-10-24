@@ -73,6 +73,7 @@ python app.py                       # UI at http://127.0.0.1:5000 (live controll
 python app.py --fake                # fake controller, no Google access, no quota used
 python app.py --fake --scenario tests/scenarios/quota_after_2.json
 python app.py --login               # opens the automation Chrome profile for manual sign-in
+python app.py --check-browser       # diagnose Chrome / ChromeDriver / attach (no Google actions, no quota)
 python app.py --host 0.0.0.0        # LAN access for UI testing (warns; automation still runs on THIS machine)
 python tools/ui_probe.py            # M1: capture screenshot + DOM snapshot of the current Vids page
 

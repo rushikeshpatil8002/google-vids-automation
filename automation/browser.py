@@ -13,6 +13,7 @@ from pathlib import Path
 
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.remote.webdriver import WebDriver
 
 from automation import platform_utils
@@ -159,7 +160,7 @@ def attach_driver(cfg: Config) -> WebDriver:
     opts.debugger_address = f"127.0.0.1:{port}"
     # Lets Selenium Manager pick the ChromeDriver that matches this Chrome.
     opts.binary_location = str(platform_utils.find_chrome_binary(cfg.browser.chrome_binary))
-    return _new_driver(opts, f"attach to Chrome on 127.0.0.1:{port}")
+    return _new_driver(opts, f"attach to Chrome on 127.0.0.1:{port}", cfg)
 
 
 def get_driver(cfg: Config) -> WebDriver:
@@ -172,15 +173,38 @@ def get_driver(cfg: Config) -> WebDriver:
     profile_dir(cfg).mkdir(parents=True, exist_ok=True)
     for arg in _profile_args(cfg):
         opts.add_argument(arg)
-    return _new_driver(opts, "launch Chrome")
+    return _new_driver(opts, "launch Chrome", cfg)
 
 
-def _new_driver(opts: webdriver.ChromeOptions, action: str) -> WebDriver:
+def _new_driver(opts: webdriver.ChromeOptions, action: str, cfg: Config) -> WebDriver:
+    """Start a ChromeDriver session: Selenium Manager finds the driver unless browser.chromedriver_path is set."""
+    driver_path = cfg.browser.chromedriver_path
+    if driver_path is not None and not driver_path.is_file():
+        raise ConfigError(f"browser.chromedriver_path does not exist: {driver_path}")
     try:
+        if driver_path is not None:
+            return webdriver.Chrome(options=opts, service=Service(executable_path=str(driver_path)))
         return webdriver.Chrome(options=opts)
     except WebDriverException as exc:
-        first_line = (exc.msg or str(exc)).strip().splitlines()[0]
-        raise BrowserStartError(f"Selenium could not {action}: {first_line}") from exc
+        raise BrowserStartError(describe_driver_error(exc, action)) from exc
+
+
+def _first_line(exc: BaseException) -> str:
+    text = (getattr(exc, "msg", None) or str(exc)).strip()
+    return text.splitlines()[0] if text else type(exc).__name__
+
+
+def describe_driver_error(exc: BaseException, action: str) -> str:
+    """User-facing error with Selenium's underlying cause and, for driver problems, how to fix them."""
+    message = f"Selenium could not {action}: {_first_line(exc)}"
+    cause = exc.__cause__ or exc.__context__
+    if cause is not None and _first_line(cause) not in message:
+        message += f" (cause: {_first_line(cause)})"
+    if "Unable to obtain driver" in message or "driver_location" in message:
+        message += (". Selenium Manager could not get ChromeDriver. Check internet access (proxy, firewall or "
+                    "antivirus), run `python app.py --check-browser` for details, or download the ChromeDriver "
+                    "that matches your Chrome version and set browser.chromedriver_path in config.json.")
+    return message
 
 
 def set_download_dir(driver: WebDriver, path: Path) -> Path:

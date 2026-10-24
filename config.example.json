@@ -19,9 +19,10 @@
   },
 
   "browser": {
-    "_doc": "mode: 'attach' (default; app starts normal Chrome with a debug port, Selenium attaches) or 'launch' (Selenium starts Chrome). chrome_binary null = auto-detect. Never point profile_dir at your everyday Chrome profile.",
+    "_doc": "mode: 'attach' (default; app starts normal Chrome with a debug port, Selenium attaches) or 'launch' (Selenium starts Chrome). chrome_binary null = auto-detect. chromedriver_path null = Selenium Manager downloads the matching ChromeDriver; set it to a chromedriver(.exe) you downloaded if that fails (offline, proxy). Never point profile_dir at your everyday Chrome profile.",
     "mode": "attach",
     "chrome_binary": null,
+    "chromedriver_path": null,
     "profile_dir": "data/chrome-profile",
     "debug_port": 9222,
     "vids_home_url": "https://vids.google.com/",

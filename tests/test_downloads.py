@@ -26,7 +26,7 @@ def test_a3_valid_mp4_passes(cfg, tmp_path):
     ("bad.mp4", b"\0" * 10240, "ftyp"),
     ("clip.mov", tiny_mp4(), "extension"),
     ("clip.mp4.crdownload", tiny_mp4(), "extension"),
-])
+], ids=["empty", "no_ftyp", "mov", "crdownload"])  # short ids: Windows caps env vars (PYTEST_CURRENT_TEST) at 32767 chars
 def test_a3_bad_files_rejected(cfg, tmp_path, name, data, reason):
     f = tmp_path / name
     f.write_bytes(data)

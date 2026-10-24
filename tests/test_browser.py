@@ -159,3 +159,37 @@ class _NullCtx:
 
     def __exit__(self, *exc):
         return False
+
+
+def test_driver_error_shows_cause_and_fix(make_config, monkeypatch):
+    """A 'Unable to obtain driver' failure must explain the real cause and how to fix it (Windows report)."""
+    from selenium.common.exceptions import NoSuchDriverException, WebDriverException
+
+    def fail(**kwargs):
+        try:
+            raise WebDriverException("Unsuccessful response (exit code 65): error sending request for url")
+        except WebDriverException as cause:
+            raise NoSuchDriverException("Unable to obtain driver for chrome; see driver_location") from cause
+
+    monkeypatch.setattr(browser.webdriver, "Chrome", fail)
+    with pytest.raises(BrowserStartError) as err:
+        browser._new_driver(browser.webdriver.ChromeOptions(), "attach to Chrome", make_config())
+    message = str(err.value)
+    assert "Unable to obtain driver" in message and "error sending request" in message
+    assert "--check-browser" in message and "chromedriver_path" in message
+
+
+def test_chromedriver_path_used_when_configured(make_config, monkeypatch, tmp_path):
+    driver = tmp_path / "chromedriver.exe"
+    driver.write_bytes(b"")
+    seen = {}
+    monkeypatch.setattr(browser.webdriver, "Chrome", lambda **kwargs: seen.update(kwargs) or "driver")
+    cfg = make_config({"browser": {"chromedriver_path": str(driver)}})
+    assert browser._new_driver(browser.webdriver.ChromeOptions(), "launch Chrome", cfg) == "driver"
+    assert seen["service"].path == str(driver)
+
+
+def test_missing_chromedriver_path_is_a_config_error(make_config, tmp_path):
+    cfg = make_config({"browser": {"chromedriver_path": str(tmp_path / "nope.exe")}})
+    with pytest.raises(ConfigError, match="chromedriver_path does not exist"):
+        browser._new_driver(browser.webdriver.ChromeOptions(), "launch Chrome", cfg)
