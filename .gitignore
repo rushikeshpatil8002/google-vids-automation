@@ -1,0 +1,35 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Local config (copy of config.example.json)
+config.json
+
+# Runtime state, browser profile, downloads — never commit (P1, P2)
+data/*
+!data/.gitkeep
+
+# Outputs and logs
+output/*
+!output/.gitkeep
+logs/*
+!logs/.gitkeep
+
+# User inputs may be confidential; only the sample project is committed
+input/*
+!input/.gitkeep
+!input/Sample_Project/
+
+# M1 raw DOM dumps may contain account details
+docs/feasibility/raw/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.crdownload
+sdfljd.txt

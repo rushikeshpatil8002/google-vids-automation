@@ -1,0 +1,16 @@
+{
+  "name": "login_required",
+  "description": "First readiness check finds a sign-in page: job WAITING_FOR_USER, banner shown, no submits. Resume then completes. Proves ER3, A8.",
+  "capabilities": {"multi_scene": true, "combined_export": true, "per_clip_download": true, "max_reference_images": 1, "max_prompt_chars": null},
+  "generation_seconds": 1,
+  "download_delay_seconds": 0.3,
+  "login_required_checks": 1,
+  "quota_after_generations": null,
+  "fail_generation_parts": {},
+  "timeout_generation_parts": {},
+  "upload_fail_parts": {},
+  "network_error_parts": {},
+  "download_interrupt_parts": {},
+  "ui_missing": null,
+  "disk_error": null
+}

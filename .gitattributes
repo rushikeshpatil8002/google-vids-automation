@@ -1,0 +1,8 @@
+# Same bytes on macOS and Windows: scripts are sent to Vids verbatim (DEC-01).
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.webp binary
+*.mp4 binary
+*.pdf binary
+*.ps1 text eol=crlf

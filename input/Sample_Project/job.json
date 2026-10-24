@@ -1,0 +1,27 @@
+{
+  "project_name": "Sample_Project",
+  "mode": "multi_part",
+  "output_dir": "output/Sample_Project",
+  "clip_template": "{project}_Part{part:02d}",
+  "final_template": "{project}_Final",
+  "parts": [
+    {
+      "part": 1,
+      "title": "Sunset",
+      "script_file": "input/Sample_Project/part_01/script.txt",
+      "reference_images": ["input/Sample_Project/part_01/reference.png"]
+    },
+    {
+      "part": 2,
+      "title": "Dusk beam",
+      "script_file": "input/Sample_Project/part_02/script.txt",
+      "reference_images": ["input/Sample_Project/part_02/reference.png"]
+    },
+    {
+      "part": 3,
+      "title": "Starry night",
+      "script_file": "input/Sample_Project/part_03/script.txt",
+      "reference_images": ["input/Sample_Project/part_03/reference.png"]
+    }
+  ]
+}

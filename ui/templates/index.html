@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Google Vids Automation</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header class="topbar">
+  <h1>Google Vids Automation</h1>
+  <span id="badge-fake" class="badge badge-fake" hidden>FAKE MODE · no Google access</span>
+  <span id="badge-lan" class="badge badge-lan" hidden>LAN MODE</span>
+  <span class="spacer"></span>
+  <span id="browser-status" class="muted">Browser: …</span>
+  <button id="btn-signin" class="secondary">Open browser to sign in</button>
+</header>
+
+<div id="banners"></div>
+
+<main class="layout">
+  <aside class="card jobs">
+    <div class="row">
+      <h2>Jobs</h2>
+      <span class="spacer"></span>
+      <button id="btn-new-job">New job</button>
+    </div>
+    <label class="import">Import manifest <input type="file" id="import-file" accept=".json,application/json"></label>
+    <ul id="job-list" class="job-list"></ul>
+  </aside>
+
+  <section class="content">
+    <div id="empty" class="card muted">Create a job or import a manifest (see <code>input/Sample_Project/job.json</code>).</div>
+
+    <form id="new-job-form" class="card" hidden>
+      <h2>New job</h2>
+      <div class="grid">
+        <label>Project name <input name="project_name" required maxlength="60" placeholder="Project_A"></label>
+        <label>Mode
+          <select name="mode">
+            <option value="single">Single video</option>
+            <option value="multi_part">Multi-part project (one combined video)</option>
+            <option value="separate_clips">Separate clips (one file per part)</option>
+          </select>
+        </label>
+        <label>Output folder <input name="output_dir" placeholder="output/&lt;project&gt; (default)"></label>
+        <label>Clip name template <input name="clip_template" placeholder="{project}_Part{part:02d}"></label>
+      </div>
+      <div class="row"><button type="submit">Create job</button><button type="button" class="secondary" id="btn-cancel-new">Cancel</button></div>
+    </form>
+
+    <div id="job-view" hidden>
+      <div class="card">
+        <div class="row">
+          <h2 id="job-title"></h2>
+          <span id="job-status" class="chip"></span>
+          <span class="spacer"></span>
+          <button id="btn-delete" class="danger secondary">Delete job data</button>
+        </div>
+        <div id="job-fields" class="grid"></div>
+      </div>
+
+      <div id="editor" class="card">
+        <div class="row"><h3>Parts</h3><span class="spacer"></span><button id="btn-add-part" class="secondary">Add part</button></div>
+        <div id="parts"></div>
+        <form id="add-part-form" class="part-card new" hidden>
+          <h4>New part</h4>
+          <label>Title (optional) <input name="title" maxlength="80"></label>
+          <label>Script <textarea name="script_text" rows="4" placeholder="Type the prompt, or choose a .txt file below"></textarea></label>
+          <label>…or script file (.txt) <input type="file" name="script_file" accept=".txt,text/plain"></label>
+          <label>Reference image(s) <input type="file" name="images" accept="image/png,image/jpeg,image/webp" multiple required></label>
+          <div class="row"><button type="submit">Save part</button><button type="button" class="secondary" id="btn-cancel-part">Cancel</button></div>
+        </form>
+        <div class="row actions">
+          <button id="btn-validate">Validate Job</button>
+        </div>
+        <ul id="job-errors" class="errors"></ul>
+      </div>
+
+      <div id="review" class="card" hidden>
+        <h3>Review plan</h3>
+        <div id="plan"></div>
+        <div class="row actions"><button id="btn-start">Start</button></div>
+      </div>
+
+      <div id="progress" class="card" hidden>
+        <div class="row">
+          <h3>Progress</h3>
+          <span id="progress-count" class="muted"></span>
+          <span class="spacer"></span>
+          <span id="current-step" class="muted"></span>
+        </div>
+        <div class="bar"><div id="bar-fill"></div></div>
+        <table class="parts-table">
+          <thead><tr><th>#</th><th>Title</th><th>Status</th><th>Retries</th><th>Output</th><th>Error</th></tr></thead>
+          <tbody id="progress-rows"></tbody>
+        </table>
+        <p id="final-line" class="muted"></p>
+        <div class="row actions">
+          <button id="btn-stop" class="secondary">Stop Safely</button>
+          <button id="btn-resume">Resume</button>
+          <button id="btn-retry">Retry Failed Parts</button>
+          <button id="btn-open" class="secondary">Open Output Folder</button>
+          <button id="btn-report" class="secondary">Export Report</button>
+        </div>
+        <h4>Recent events</h4>
+        <ul id="events" class="events"></ul>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

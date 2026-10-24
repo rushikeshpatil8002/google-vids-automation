@@ -1,0 +1,16 @@
+{
+  "name": "quota_after_2_no_clip_dl",
+  "description": "Usage limit after 2 generations in multi_part mode without per-clip download: partial export verified, final_export_status PARTIAL_DOWNLOADED. Proves DEC-24.",
+  "capabilities": {"multi_scene": true, "combined_export": true, "per_clip_download": false, "max_reference_images": 1, "max_prompt_chars": null},
+  "generation_seconds": 1,
+  "download_delay_seconds": 0.3,
+  "login_required_checks": 0,
+  "quota_after_generations": 2,
+  "fail_generation_parts": {},
+  "timeout_generation_parts": {},
+  "upload_fail_parts": {},
+  "network_error_parts": {},
+  "download_interrupt_parts": {},
+  "ui_missing": null,
+  "disk_error": null
+}

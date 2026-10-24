@@ -1,0 +1,16 @@
+{
+  "name": "upload_fail_part1",
+  "description": "Image upload for part 1 fails on its first 3 attempts (= upload_max_attempts): part stays PENDING with error_code UPLOAD, job PAUSED, later parts not started, submit count 0. Resume retries the upload and succeeds. Proves IM3, DEC-26.",
+  "capabilities": {"multi_scene": true, "combined_export": true, "per_clip_download": true, "max_reference_images": 1, "max_prompt_chars": null},
+  "generation_seconds": 1,
+  "download_delay_seconds": 0.3,
+  "login_required_checks": 0,
+  "quota_after_generations": null,
+  "fail_generation_parts": {},
+  "timeout_generation_parts": {},
+  "upload_fail_parts": {"1": 3},
+  "network_error_parts": {},
+  "download_interrupt_parts": {},
+  "ui_missing": null,
+  "disk_error": null
+}

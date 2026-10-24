@@ -1,0 +1,16 @@
+{
+  "name": "quota_after_2",
+  "description": "Usage limit after 2 generations on a 3-part job: P1,P2 DOWNLOADED, P3 BLOCKED_QUOTA, job BLOCKED_QUOTA, no third submit. Proves ER1, A5.",
+  "capabilities": {"multi_scene": true, "combined_export": true, "per_clip_download": true, "max_reference_images": 1, "max_prompt_chars": null},
+  "generation_seconds": 1,
+  "download_delay_seconds": 0.3,
+  "login_required_checks": 0,
+  "quota_after_generations": 2,
+  "fail_generation_parts": {},
+  "timeout_generation_parts": {},
+  "upload_fail_parts": {},
+  "network_error_parts": {},
+  "download_interrupt_parts": {},
+  "ui_missing": null,
+  "disk_error": null
+}

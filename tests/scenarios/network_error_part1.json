@@ -1,0 +1,16 @@
+{
+  "name": "network_error_part1",
+  "description": "First 2 submit attempts of part 1 raise NetworkError; step retry with backoff recovers on attempt 3. Tests set backoff_seconds to [0,0,0]. Proves ER2 retry path, A8 (network loss logged).",
+  "capabilities": {"multi_scene": true, "combined_export": true, "per_clip_download": true, "max_reference_images": 1, "max_prompt_chars": null},
+  "generation_seconds": 1,
+  "download_delay_seconds": 0.3,
+  "login_required_checks": 0,
+  "quota_after_generations": null,
+  "fail_generation_parts": {},
+  "timeout_generation_parts": {},
+  "upload_fail_parts": {},
+  "network_error_parts": {"1": 2},
+  "download_interrupt_parts": {},
+  "ui_missing": null,
+  "disk_error": null
+}

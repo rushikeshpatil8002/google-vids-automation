@@ -1,0 +1,81 @@
+{
+  "_doc": "Single source of all Google Vids selectors and text patterns. Verified in M1 (docs/07_FEASIBILITY_REPORT.md, snapshots in docs/feasibility/raw/). The live controller refuses to run while any capability is null or any value contains TODO_M1 (DEC-25). Strategy 'by' values: css, xpath, aria_label, role_name, text. \"not_applicable\" marks keys the verified workflow does not need.",
+
+  "_meta": {
+    "verified_on": "2026-10-24",
+    "chrome_version": "154.0.8037.100",
+    "account_type": "personal Google account, Google AI Pro",
+    "ui_language": "en",
+    "browser_mode": "attach",
+    "upload_method": "file_input: hidden input[type=file] (accept image/png, image/jpeg). Extra images: click add_ingredient_button with the native file dialog suppressed in-page, then send_keys to the input it creates",
+    "prompt_newline_method": "execCommand insertText per line, insertLineBreak between lines; verified by read-back",
+    "fragile_keys": ["blank_project_option", "home_ready", "new_project_button", "insert_generated_clip", "download_submenu", "download_mp4_option", "delete_scenes_option", "generation_error", "quota_message_container"],
+    "notes": [
+      "A new project opens a 'Getting started' dialog; the controller picks 'Blank vid'.",
+      "Inserting the first clip into a new project leaves an extra empty 5 s scene; the controller deletes empty scenes after every insert (Scene > Delete scenes).",
+      "The generated clip's aria-label contains the full prompt: never log page text or aria-labels.",
+      "The user may browse in the same Chrome: the controller opens its own tab and stays on that window handle.",
+      "The AI panel does not keep generated clips after a page reload: insert right after READY and never reload or close the controller tab mid-part."
+    ]
+  },
+
+  "capabilities": {
+    "multi_scene": true,
+    "combined_export": true,
+    "per_clip_download": false,
+    "max_reference_images": 2,
+    "max_prompt_chars": 6000,
+    "export_format": "mp4"
+  },
+
+  "urls": {
+    "home": "https://docs.google.com/videos/u/0/",
+    "editor_url_pattern": "^https://docs\\.google\\.com/videos/d/[A-Za-z0-9_-]+/edit"
+  },
+
+  "elements": {
+    "home_ready":              [{"by": "css", "value": "[role='listbox'] [role='option']"}, {"by": "text", "value": "Start a new video"}],
+    "new_project_button":      [{"by": "css", "value": "[role='listbox'] [role='option']"}],
+    "blank_project_option":    [{"by": "xpath", "value": "//*[@role='dialog']//button[starts-with(normalize-space(),'Blank vid')]"}],
+    "editor_ready":            [{"by": "css", "value": "#content-library-rail-video-generation-element"}, {"by": "aria_label", "value": "Generate an AI video clip"}],
+    "project_title_input":     [{"by": "css", "value": "input[aria-label='Rename']"}, {"by": "css", "value": "input.docs-title-input"}],
+    "generate_video_entry":    [{"by": "css", "value": "#content-library-rail-video-generation-element"}, {"by": "aria_label", "value": "Generate an AI video clip"}],
+    "prompt_expand_button":    [{"by": "css", "value": "button[aria-label='Expand']"}],
+    "image_upload_input":      [{"by": "css", "value": "input[type='file'][accept*='image/png']"}, {"by": "css", "value": "input[type='file'][accept*='image']"}],
+    "add_ingredient_button":   [{"by": "css", "value": "button[aria-label='Add avatar or ingredients']"}, {"by": "css", "value": "button[aria-label='Ingredients']"}],
+    "image_drop_zone":         "not_applicable",
+    "image_upload_preview":    [{"by": "css", "value": "[aria-label^='Remove image']"}],
+    "prompt_textbox":          [{"by": "css", "value": "div[role='textbox'][contenteditable='true'][aria-label^='Specify how you want to use the ingredients']"}, {"by": "css", "value": "div[role='textbox'][contenteditable='true'][aria-label^='Describe your video']"}, {"by": "css", "value": "div[role='textbox'][contenteditable='true']"}],
+    "prompt_clear_button":     [{"by": "xpath", "value": "//button[normalize-space()='Clear']"}],
+    "generate_button":         [{"by": "css", "value": "button[aria-label='Generate']"}],
+    "generation_in_progress":  [{"by": "css", "value": "[role='progressbar'][id^='progress-percentage']"}],
+    "generation_cancel":       [{"by": "xpath", "value": "//button[normalize-space()='Cancel']"}],
+    "generation_ready":        [{"by": "css", "value": "video[aria-label^='Generated video']"}],
+    "generation_error":        [{"by": "css", "value": "[role='alert']"}],
+    "clip_more_actions":       [{"by": "css", "value": "button[aria-label='More actions']"}],
+    "insert_generated_clip":   [{"by": "xpath", "value": "//*[self::button or @role='button'][contains(normalize-space(.),'Insert')][string-length(normalize-space(.)) < 24][not(@aria-label='Insert text')]"}],
+    "add_scene_button":        [{"by": "css", "value": "#newSceneButton"}, {"by": "aria_label", "value": "New scene (Ctrl+M)"}],
+    "scene_list_item":         [{"by": "css", "value": "[role='button'][aria-label^='Scene ']"}],
+    "empty_scene_marker":      [{"by": "css", "value": "[aria-label='This scene has no objects.']"}],
+    "scene_menu":              [{"by": "css", "value": "#flix-scene-menu"}],
+    "delete_scenes_option":    [{"by": "xpath", "value": "//*[@role='menuitem'][starts-with(normalize-space(),'Delete scenes')]"}],
+    "download_menu":           [{"by": "css", "value": "#docs-file-menu"}],
+    "download_submenu":        [{"by": "xpath", "value": "//*[@role='menuitem'][starts-with(normalize-space(),'Download')]"}],
+    "download_mp4_option":     [{"by": "xpath", "value": "//*[@role='menuitem'][starts-with(normalize-space(),'MP4 video')]"}],
+    "new_video_menuitem":      [{"by": "xpath", "value": "//*[@role='menuitem'][starts-with(normalize-space(),'New video')]"}],
+    "export_in_progress":      [{"by": "css", "value": "[aria-label='Export status: Your video export is in progress']"}],
+    "export_ready":            [{"by": "css", "value": "[aria-label='Export status: Your video has exported']"}, {"by": "text", "value": "Download started"}],
+    "quota_message_container": [{"by": "css", "value": "[role='alert'], [role='alertdialog'], [role='dialog']"}]
+  },
+
+  "text_patterns": {
+    "_doc": "Case-insensitive regexes matched against visible text. quota and generation_failed were not seen live in M1: seeded from Google's usual wording; extend without code changes.",
+    "quota": ["reached (your|the) (daily |monthly |weekly )?(usage )?limit", "usage limit", "limit (has been |was )?reached", "out of (credits|generations)", "no (more )?(generations|credits) (left|remaining)", "you('|’)ve used all", "try again (later|tomorrow)", "quota"],
+    "login": ["sign in to continue", "choose an account", "use your google account", "to continue to google"],
+    "captcha": ["verify it.?s you", "unusual traffic", "captcha"],
+    "generation_failed": ["couldn('|’)t generate", "unable to generate", "generation failed", "something went wrong", "try a different prompt", "violates", "can('|’)t create"],
+    "generation_in_progress": ["your video clip is generating"],
+    "generation_ready": ["your generated video is ready for preview"],
+    "export_done": ["download started", "your video has exported"]
+  }
+}

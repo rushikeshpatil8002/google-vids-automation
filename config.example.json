@@ -1,0 +1,94 @@
+{
+  "_doc": "Copy to config.json (gitignored) and edit there. Keys starting with '_' are documentation and are ignored by the loader. Relative paths resolve against the project root.",
+
+  "server": {
+    "_doc": "Default bind is loopback only. --host 0.0.0.0 enables LAN access for UI testing (DEC-21).",
+    "host": "127.0.0.1",
+    "port": 5000
+  },
+
+  "paths": {
+    "data_dir": "data",
+    "db_file": "data/jobs.sqlite3",
+    "input_dir": "input",
+    "default_output_root": "output",
+    "logs_dir": "logs",
+    "screenshots_dir": "logs/screenshots",
+    "download_staging_dir": "data/downloads_staging",
+    "thumbnails_dir": "data/thumbnails"
+  },
+
+  "browser": {
+    "_doc": "mode: 'attach' (default; app starts normal Chrome with a debug port, Selenium attaches) or 'launch' (Selenium starts Chrome). chrome_binary null = auto-detect. Never point profile_dir at your everyday Chrome profile.",
+    "mode": "attach",
+    "chrome_binary": null,
+    "profile_dir": "data/chrome-profile",
+    "debug_port": 9222,
+    "vids_home_url": "https://vids.google.com/",
+    "headless": false,
+    "window_size": [1440, 900]
+  },
+
+  "timeouts_seconds": {
+    "page_load": 60.0,
+    "element": 30.0,
+    "upload": 120.0,
+    "generation": 900.0,
+    "generation_poll_interval": 5.0,
+    "download_start": 120.0,
+    "download_complete": 600.0,
+    "export_render": 1800.0
+  },
+
+  "retries": {
+    "_doc": "step_* = retry of one UI step; part_auto_retries = automatic retries of a whole part within a run (ER2/ER5 only); consecutive failures pause the job (DEC-12).",
+    "step_max_attempts": 3,
+    "backoff_seconds": [5.0, 15.0, 45.0],
+    "part_auto_retries": 1,
+    "upload_max_attempts": 3,
+    "download_max_attempts": 3,
+    "consecutive_part_failures_to_pause": 2,
+    "file_move_attempts": 10,
+    "file_move_interval_seconds": 0.5
+  },
+
+  "limits": {
+    "_doc": "max_reference_images_per_part and max_script_chars come from M1 findings (DEC-01, DEC-04): Vids accepted 2 images and showed no prompt limit up to 6000 characters. null = no check.",
+    "max_reference_images_per_part": 2,
+    "max_script_chars": 6000,
+    "max_image_mb": 20,
+    "max_parts_per_job": 50,
+    "min_video_bytes": 10240
+  },
+
+  "downloads": {
+    "accepted_extensions": [".mp4"],
+    "temp_suffixes": [".crdownload", ".tmp", ".part"],
+    "stable_polls_required": 2,
+    "poll_interval_seconds": 1.0
+  },
+
+  "naming": {
+    "_doc": "Python str.format templates. Tokens: {project} {part} {title}. Clip template must contain {part} (DEC-05).",
+    "clip_template": "{project}_Part{part:02d}",
+    "final_template": "{project}_Final",
+    "partial_template": "{project}_Partial"
+  },
+
+  "ui": {
+    "poll_interval_ms": 2000,
+    "events_shown": 10
+  },
+
+  "logging": {
+    "level": "INFO",
+    "max_bytes": 5242880,
+    "backup_count": 5
+  },
+
+  "fake": {
+    "_doc": "enabled=true or --fake uses FakeVidsController (no Google access). --scenario overrides scenario.",
+    "enabled": false,
+    "scenario": "tests/scenarios/happy_path.json"
+  }
+}
