@@ -26,8 +26,8 @@ class QuotaReachedError(Exception):
 class UIElementMissingError(Exception):
     """A selector key matched nothing visible in time (ER4)."""
 
-    def __init__(self, selector_key: str, step: str, screenshot: Path | None = None) -> None:
-        super().__init__(f"UI element '{selector_key}' not found during step {step}")
+    def __init__(self, selector_key: str, step: str, screenshot: Path | None = None, detail: str | None = None) -> None:
+        super().__init__(f"UI element '{selector_key}' not found during step {step}" + (f". {detail}" if detail else ""))
         self.selector_key = selector_key
         self.step = step
         self.screenshot = screenshot

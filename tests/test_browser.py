@@ -193,3 +193,21 @@ def test_missing_chromedriver_path_is_a_config_error(make_config, tmp_path):
     cfg = make_config({"browser": {"chromedriver_path": str(tmp_path / "nope.exe")}})
     with pytest.raises(ConfigError, match="chromedriver_path does not exist"):
         browser._new_driver(browser.webdriver.ChromeOptions(), "launch Chrome", cfg)
+
+
+def test_er4_missing_element_message_names_open_dialog():
+    """ER4 diagnostics: the error says which dialog blocked the step (UI label only)."""
+    from automation.errors import UIElementMissingError
+
+    exc = UIElementMissingError("editor_ready", "PROJECT_CREATE", None, "Open dialog(s): 'Getting started'")
+    assert str(exc) == "UI element 'editor_ready' not found during step PROJECT_CREATE. Open dialog(s): 'Getting started'"
+    assert str(UIElementMissingError("x", "S")) == "UI element 'x' not found during step S"
+
+
+def test_selectors_define_create_url():
+    import json
+    from automation.vids_controller import SELECTORS_FILE, check_selectors_verified
+
+    sel = json.loads(SELECTORS_FILE.read_text(encoding="utf-8"))
+    assert sel["urls"]["create"].startswith("https://docs.google.com/videos/")
+    check_selectors_verified(sel)

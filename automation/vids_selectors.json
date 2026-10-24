@@ -11,7 +11,7 @@
     "prompt_newline_method": "execCommand insertText per line, insertLineBreak between lines; verified by read-back",
     "fragile_keys": ["blank_project_option", "home_ready", "new_project_button", "insert_generated_clip", "download_submenu", "download_mp4_option", "delete_scenes_option", "generation_error", "quota_message_container"],
     "notes": [
-      "A new project opens a 'Getting started' dialog; the controller picks 'Blank vid'.",
+      "New projects are created by opening urls.create (verified 2026-10-24); the home-page tile is the fallback. A new project opens a 'Getting started' dialog; the controller picks 'Blank vid'.",
       "Inserting the first clip into a new project leaves an extra empty 5 s scene; the controller deletes empty scenes after every insert (Scene > Delete scenes).",
       "The generated clip's aria-label contains the full prompt: never log page text or aria-labels.",
       "The user may browse in the same Chrome: the controller opens its own tab and stays on that window handle.",
@@ -30,6 +30,7 @@
 
   "urls": {
     "home": "https://docs.google.com/videos/u/0/",
+    "create": "https://docs.google.com/videos/create",
     "editor_url_pattern": "^https://docs\\.google\\.com/videos/d/[A-Za-z0-9_-]+/edit"
   },
 

@@ -33,7 +33,7 @@
 | # | Step | Selector keys | Class | Notes |
 |---|------|---------------|-------|-------|
 | 1 | Open Vids home (signed in) | home_ready | F | Home URL `docs.google.com/videos/u/0/`. The new-video tile has no label (first `[role=listbox] [role=option]`) |
-| 2 | Create blank project | new_project_button, blank_project_option, editor_ready | F | A new project opens a "Getting started" dialog; the controller picks "Blank vid". Rename via `input[aria-label=Rename]` (the export file is named after the title) |
+| 2 | Create blank project | urls.create, new_project_button (fallback), blank_project_option, editor_ready | A | Opening `https://docs.google.com/videos/create` creates a project in the same tab (verified 2026-10-24); the home-page tile is the fallback. A new project opens a "Getting started" dialog; the controller picks "Blank vid". Rename via `input[aria-label=Rename]` (the export file is named after the title) |
 | 3 | Open generate-video panel | generate_video_entry, prompt_expand_button | A | Stable id `content-library-rail-video-generation-element`; the prompt area must be expanded |
 | 4 | Upload reference image(s) | image_upload_input, add_ingredient_button, image_upload_preview | A | Method (05 §6): **file input**. The first image goes to the hidden `input[type=file]`; extra images via "+ Add" with the OS file dialog suppressed in the page. PNG/JPEG only. 2 images verified |
 | 5 | Enter prompt | prompt_textbox | A | Read-back verified: **yes** (the `Image1` chip is ignored). Newline method: `execCommand insertText` + `insertLineBreak` |

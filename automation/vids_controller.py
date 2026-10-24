@@ -145,6 +145,7 @@ class VidsSeleniumController(VidsController):
         self.step = "init"
         self.diag_prefix = "run"
         self._pending: dict[str, int] = {}  # part_ref -> generated-video count before submit
+        self._known_tabs: set[str] = set()
 
     # ----- lifecycle -------------------------------------------------------------------
 
@@ -247,7 +248,7 @@ class VidsSeleniumController(VidsController):
                     continue
             if time.monotonic() > deadline:
                 shot = self.capture_diagnostics(f"missing_{key}")
-                raise UIElementMissingError(key, self.step, shot)
+                raise UIElementMissingError(key, self.step, shot, self.open_dialogs_hint())
             time.sleep(0.5)
 
     def click(self, key: str, timeout: float | None = None) -> None:
@@ -307,12 +308,52 @@ class VidsSeleniumController(VidsController):
 
     # ----- projects and scenes -----------------------------------------------------------
 
+    def open_dialogs_hint(self) -> str | None:
+        """Names of open dialogs (UI labels only, never page text), to explain what blocked a step."""
+        try:
+            labels = self.d.execute_script(
+                "return [...document.querySelectorAll('[role=dialog],[role=alertdialog],[aria-modal=true]')]"
+                ".filter(e => e.getBoundingClientRect().width > 0)"
+                ".map(e => e.getAttribute('aria-label') || (e.querySelector('h1,h2,[role=heading]')||{}).innerText || 'unnamed')"
+                ".map(s => String(s).trim().slice(0, 60));") or []
+        except WebDriverException:
+            return None
+        return f"Open dialog(s): {', '.join(repr(l) for l in labels)}" if labels else None
+
+    def _wait_for_editor(self, timeout: float) -> bool:
+        """True once the editor is visible in our tab, or in a tab Vids just opened (adopted as ours)."""
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            self._check_login()
+            if self.exists("editor_ready"):
+                return True
+            self._adopt_new_editor_tab()
+            time.sleep(0.5)
+        return False
+
+    def _adopt_new_editor_tab(self) -> None:
+        pattern = self.sel["urls"]["editor_url_pattern"]
+        for handle in self.driver.window_handles:
+            if handle == self.handle:
+                continue
+            self.driver.switch_to.window(handle)
+            if re.match(pattern, self.driver.current_url) and handle not in self._known_tabs:
+                self.handle = handle
+                (self.cfg.paths.data_dir / "controller_tab.txt").write_text(handle, encoding="utf-8")
+                return
+        self.driver.switch_to.window(self.handle)
+
     def create_project(self, name: str) -> str:
+        """New blank project via urls.create; the home-page tile is the fallback."""
         self.step = "PROJECT_CREATE"
-        if not self.exists("home_ready"):
+        self._known_tabs = set(self.d.window_handles)
+        self._get(self.sel["urls"]["create"])
+        if not self._wait_for_editor(self.cfg.timeouts_seconds.page_load):
+            log.warning("create URL did not open the editor; trying the home-page tile", extra={"step": self.step})
             self._get(self.sel["urls"]["home"])
-        self.click("new_project_button", timeout=self.cfg.timeouts_seconds.page_load)
-        self.find("editor_ready", timeout=self.cfg.timeouts_seconds.page_load)
+            self.click("new_project_button", timeout=self.cfg.timeouts_seconds.page_load)
+            if not self._wait_for_editor(self.cfg.timeouts_seconds.page_load):
+                self.find("editor_ready", timeout=0)  # raises with screenshot and open-dialog names
         self._dismiss_start_dialog()
         self.wait_until(lambda: re.match(self.sel["urls"]["editor_url_pattern"], self.d.current_url),
                         self.cfg.timeouts_seconds.element, "editor_url")
