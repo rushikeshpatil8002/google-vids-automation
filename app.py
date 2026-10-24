@@ -12,6 +12,7 @@ import argparse
 import json
 import logging
 import platform
+import socket
 import sys
 from pathlib import Path
 from typing import Any
@@ -403,6 +404,20 @@ def check_browser(cfg: Config) -> int:
     return 0 if ok else 1
 
 
+def port_in_use(host: str, port: int) -> bool:
+    """True if something already accepts connections on host:port.
+
+    Windows lets a second server bind a busy port, and the old copy keeps answering,
+    so the app checks before starting.
+    """
+    target = "127.0.0.1" if host in ("0.0.0.0", "", "::") else host
+    try:
+        with socket.create_connection((target, port), timeout=1):
+            return True
+    except OSError:
+        return False
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Google Vids Automation")
     parser.add_argument("--login", action="store_true", help="open the automation Chrome profile for manual sign-in")
@@ -432,6 +447,11 @@ def main(argv: list[str] | None = None) -> int:
     host = args.host or cfg.server.host
     port = args.port or cfg.server.port
     lan = host not in ("127.0.0.1", "localhost", "::1")
+    if port_in_use(host, port):
+        print(f"Error: something is already running on port {port}, probably another copy of this app "
+              f"(possibly an older version). Close that window or stop it (Windows: taskkill /IM python.exe /F), "
+              f"or start this one with --port {port + 1}.", file=sys.stderr)
+        return 1
     if lan:
         print("WARNING: LAN mode. Anyone on this network can open the UI (no login). "
               "Chrome, the automation and all files stay on THIS computer.", file=sys.stderr)

@@ -120,3 +120,23 @@ def test_404_and_editing_locked_after_start(client):
     wait_status(client, job_id, {"COMPLETED"})
     res = client.post(f"/api/jobs/{job_id}/parts", data=part_form(1), content_type="multipart/form-data")
     assert res.status_code == 409
+
+
+def test_port_in_use_detected():
+    """Windows lets two servers share a port; the app must refuse to start a second copy."""
+    import socket
+
+    from app import port_in_use
+
+    with socket.socket() as s:
+        s.bind(("127.0.0.1", 0))
+        s.listen()
+        port = s.getsockname()[1]
+        assert port_in_use("127.0.0.1", port) is True
+    assert port_in_use("127.0.0.1", port) is False
+
+
+def test_health_reports_version(client):
+    from automation import __version__
+
+    assert client.get("/api/health").get_json()["version"] == __version__

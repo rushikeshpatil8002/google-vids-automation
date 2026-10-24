@@ -55,6 +55,7 @@ async function loadHeader() {
   state.health = await api("GET", "/api/health");
   $("#badge-fake").hidden = !state.health.fake_mode;
   $("#badge-lan").hidden = !state.health.lan_mode;
+  $("#app-version").textContent = `v${state.health.version}`;
   const b = await api("GET", "/api/browser/status");
   $("#browser-status").textContent = b.fake ? "Browser: simulated" : `Browser: ${b.browser_running ? "running" : "not running"}`;
 }
