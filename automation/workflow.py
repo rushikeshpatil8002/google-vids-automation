@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
 
-from automation import downloads
+from automation import __version__ as APP_VERSION, downloads
 from automation.config import Config
 from automation.controller_base import GenerationState, VidsController
 from automation.errors import (
@@ -101,7 +101,8 @@ class Workflow:
                 if part["status"] == PartStatus.BLOCKED_QUOTA.value:
                     self.store.set_part_status(part["part_id"], PartStatus.PENDING, error_code=None, error_message=None)
         self.store.set_job_status(job_id, JobStatus.RUNNING, last_error=None,
-                                  event=("RESUMED" if resume else "RUN_STARTED", "INFO", "Run resumed" if resume else "Run started"))
+                                  event=("RESUMED" if resume else "RUN_STARTED", "INFO",
+                                         f"{'Run resumed' if resume else 'Run started'} (app {APP_VERSION})"))
         self._log(job, None, "RUN_STARTED", "run started")
         status = self._run(job_id, stop_event)
         self._finish(job_id)

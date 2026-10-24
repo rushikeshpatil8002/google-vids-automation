@@ -355,10 +355,24 @@ class VidsSeleniumController(VidsController):
             if not self._wait_for_editor(self.cfg.timeouts_seconds.page_load):
                 self.find("editor_ready", timeout=0)  # raises with screenshot and open-dialog names
         self._dismiss_start_dialog()
+        self._require_ai_video()
         self.wait_until(lambda: re.match(self.sel["urls"]["editor_url_pattern"], self.d.current_url),
                         self.cfg.timeouts_seconds.element, "editor_url")
         self.rename_project(name)
         return url_without_query(self.d.current_url)
+
+    def _require_ai_video(self) -> None:
+        """The editor is open; make sure this account actually offers AI video generation (rule 6: report, never fake)."""
+        deadline = time.monotonic() + self.cfg.timeouts_seconds.element
+        while time.monotonic() < deadline:
+            if self.exists("generate_video_entry"):
+                return
+            time.sleep(0.5)
+        shot = self.capture_diagnostics("no_ai_video")
+        raise UIElementMissingError(
+            "generate_video_entry", self.step, shot,
+            "The Vids editor opened, but its 'AI Video' button is missing: the Google account signed in to the "
+            "automation Chrome may not have Vids AI video generation (e.g. Google AI Pro), or the Vids UI is not in English")
 
     def _dismiss_start_dialog(self) -> None:
         """New projects open a 'Getting started' dialog: choose 'Blank vid'."""

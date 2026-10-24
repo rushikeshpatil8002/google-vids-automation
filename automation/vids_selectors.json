@@ -38,7 +38,7 @@
     "home_ready":              [{"by": "css", "value": "[role='listbox'] [role='option']"}, {"by": "text", "value": "Start a new video"}],
     "new_project_button":      [{"by": "css", "value": "[role='listbox'] [role='option']"}],
     "blank_project_option":    [{"by": "xpath", "value": "//*[@role='dialog']//button[starts-with(normalize-space(),'Blank vid')]"}],
-    "editor_ready":            [{"by": "css", "value": "#content-library-rail-video-generation-element"}, {"by": "aria_label", "value": "Generate an AI video clip"}],
+    "editor_ready":            [{"by": "css", "value": "#newSceneButton"}, {"by": "css", "value": "[role='button'][aria-label^='Scene ']"}, {"by": "css", "value": "#docs-file-menu"}],
     "project_title_input":     [{"by": "css", "value": "input[aria-label='Rename']"}, {"by": "css", "value": "input.docs-title-input"}],
     "generate_video_entry":    [{"by": "css", "value": "#content-library-rail-video-generation-element"}, {"by": "aria_label", "value": "Generate an AI video clip"}],
     "prompt_expand_button":    [{"by": "css", "value": "button[aria-label='Expand']"}],

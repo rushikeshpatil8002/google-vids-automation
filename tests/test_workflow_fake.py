@@ -83,3 +83,14 @@ def test_st4_commit_sequence_events(env):
              "DOWNLOAD_VERIFIED", "REPORT_WRITTEN", "RUN_FINISHED"]
     positions = [steps.index(s) for s in order]
     assert positions == sorted(positions)
+
+
+def test_run_started_event_shows_app_version(env):
+    """Remote troubleshooting: events tell which code version ran."""
+    from automation import __version__
+
+    e = env("happy_path")
+    job_id = e.sample_job("single", parts=1)
+    e.run(job_id)
+    started = next(ev for ev in e.store.all_events(job_id) if ev["step"] == "RUN_STARTED")
+    assert f"(app {__version__})" in started["message"]

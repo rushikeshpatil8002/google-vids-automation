@@ -18,7 +18,7 @@ from typing import Any
 
 from flask import Flask, jsonify, render_template, request, send_file
 
-from automation import browser, platform_utils
+from automation import __version__ as VERSION, browser, platform_utils
 from automation.config import PROJECT_ROOT, Config, load_config
 from automation.controller_base import Capabilities, VidsController
 from automation.errors import BrowserStartError, ConfigError, ValidationError
@@ -37,7 +37,6 @@ from automation.state_store import Store
 from automation.worker import Worker
 from automation.workflow import Workflow
 
-VERSION = "1.0.0"
 log = logging.getLogger("app")
 
 
